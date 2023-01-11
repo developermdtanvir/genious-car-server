@@ -15,30 +15,26 @@ app.use(express.json());
 const client = new MongoClient(uri);
 const car_collection = client.db('car_service').collection('service');
 const login_user_collection = client.db('user_login').collection('login')
+const product_collection = client.db('product').collection('item')
 
 app.get('/', (req, res) => {
     res.send('My car service server is Ready')
 })
 async function run() {
     try {
-        app.get('/service', async (req, res) => {
+        app.post('/product', async (req, res) => {
+            const product = req.body;
+            const result = await product_collection.insertOne(product);
+            res.send(result);
+            console.log(result.insertedId);
+        })
+
+
+        // get mehtod : 
+        app.get('/product', async (req, res) => {
             const query = {};
-            const cursor = car_collection.find(query)
-            const result = await cursor.toArray()
-            res.send(result);
-        })
-
-        app.get('/service/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await car_collection.findOne(query);
-            res.send(result);
-        })
-
-        // login user post heare : 
-        app.post('/login', async (req, res) => {
-            const login = req.body;
-            const result = await login_user_collection.insertOne(login);
+            const cursor = product_collection.find(query);
+            const result = await cursor.toArray();
             res.send(result);
         })
 
