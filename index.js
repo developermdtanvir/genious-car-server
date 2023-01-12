@@ -26,7 +26,6 @@ async function run() {
             const product = req.body;
             const result = await product_collection.insertOne(product);
             res.send(result);
-            console.log(result.insertedId);
         })
 
 
@@ -37,7 +36,41 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
+        app.get('/product/:id', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) }
+            const result = await product_collection.findOne(query)
+            res.send(result);
+        })
 
+        // put method 
+
+        app.put('/product/:id', async (req, res) => {
+            const { id } = req.params;
+            const filter = { _id: ObjectId(id) }
+            const upProduct = req.body;
+            console.log(upProduct);
+            const updateDoc = {
+                $set: {
+                    name: upProduct.name,
+                    price: upProduct.price,
+                    photo: upProduct.photo,
+                    qantity: upProduct.qantity
+                }
+            }
+            const options = { upsert: true };
+            const result = await product_collection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
+        // DLETE Single item : - 
+        app.delete('/product/:id', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: ObjectId(id) }
+            const result = await product_collection.deleteOne(query)
+            res.send(result);
+
+        })
     } finally {
 
     }
